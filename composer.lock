@@ -4,8 +4,56 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2b6eebaf65e83454ed85e592d5aa1672",
+    "content-hash": "adbc3ce7832a1617430a94eed0addc1d",
     "packages": [
+        {
+            "name": "bestyii/yii2-bootstrap-icons",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bestyii/yii2-bootstrap-icons.git",
+                "reference": "22e0e6574529e6be7fd53fef653ad89f122425da"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bestyii/yii2-bootstrap-icons/zipball/22e0e6574529e6be7fd53fef653ad89f122425da",
+                "reference": "22e0e6574529e6be7fd53fef653ad89f122425da",
+                "shasum": ""
+            },
+            "require": {
+                "npm-asset/bootstrap-icons": "*",
+                "yiisoft/yii2": "^2.0.0"
+            },
+            "default-branch": true,
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "bestyii\\bootstrap\\icons\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "ez",
+                    "email": "ez@bestyii.com"
+                }
+            ],
+            "description": "bootstrap icons",
+            "keywords": [
+                "bootstrap",
+                "extension",
+                "icons",
+                "yii2"
+            ],
+            "support": {
+                "issues": "https://github.com/bestyii/yii2-bootstrap-icons/issues",
+                "source": "https://github.com/bestyii/yii2-bootstrap-icons/tree/v1.0.0"
+            },
+            "time": "2022-06-21T01:13:52+00:00"
+        },
         {
             "name": "bower-asset/bootstrap",
             "version": "v5.3.3",
@@ -335,6 +383,18 @@
                 "source": "https://github.com/m1/Env/tree/2.2.0"
             },
             "time": "2020-02-19T09:02:13+00:00"
+        },
+        {
+            "name": "npm-asset/bootstrap-icons",
+            "version": "1.11.3",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/bootstrap-icons/-/bootstrap-icons-1.11.3.tgz"
+            },
+            "type": "npm-asset",
+            "license": [
+                "MIT"
+            ]
         },
         {
             "name": "yiisoft/yii2",
@@ -714,6 +774,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "bestyii/yii2-bootstrap-icons": 20,
         "erusev/parsedown": 20,
         "m1/env": 20
     },

@@ -2,38 +2,38 @@
 
 namespace app\models;
 
-class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
+use yii\data\ActiveDataProvider;
+use Yii;
+
+
+/**
+ * класс определяющий сущность юзеря ..
+ *
+ * @property int $id Номер пользователя
+ * @property string $email Почта
+ * @property string $fullName Польное имя
+ * @property string $password Хэш пароля
+ * @property bool $active Активный пользоатель
+ * @property int $created Дата создания пользователя
+ * @property string $note Заметка админа.
+ */
+class User extends ActiveRecord implements IdentityInterface
 {
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
-
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
-
+    const ADMIN_ROLE = 'admin';
+    /**
+     * прежний пароль пользователя
+     * @var string
+     */
+    private $oldPasswordHash;
 
     /**
      * {@inheritdoc}
      */
     public static function findIdentity($id)
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        return static::findOne($id);
     }
 
     /**
@@ -41,29 +41,6 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Finds user by username
-     *
-     * @param string $username
-     * @return static|null
-     */
-    public static function findByUsername($username)
-    {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
-
         return null;
     }
 
@@ -80,7 +57,7 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      */
     public function getAuthKey()
     {
-        return $this->authKey;
+        return hash('sha256', $this->id . '-' . $this->password . '#' . $this->email);
     }
 
     /**
@@ -91,14 +68,94 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
         return $this->authKey === $authKey;
     }
 
-    /**
-     * Validates password
-     *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
-     */
-    public function validatePassword($password)
+    public function validatePassword($pass)
     {
-        return $this->password === $password;
+        return hash('sha256', $pass) == $this->password;
+    }
+
+    public function afterFind()
+    {
+        // сохраняем пароль чтобы потом его восстановить
+        $this->oldPasswordHash = $this->password;
+    }
+
+    public function afterSave($ins, $attrs)
+    {
+        parent::afterSave($ins, $attrs);
+        $adminRole = Yii::$app->authManager->getRole(static::ADMIN_ROLE);
+        if ($this->isAdmin) {
+            Yii::$app->authManager->assign($adminRole, $this->id);
+        } else {
+            Yii::$app->authManager->revoke($adminRole, $this->id);
+        }
+    }
+    public function afterDelete()
+    {
+        parent::afterDelete();
+        $adminRole = Yii::$app->authManager->getRole(static::ADMIN_ROLE);
+        Yii::$app->authManager->revoke($adminRole, $this->id);
+    }
+
+    public function rules()
+    {
+        return [
+            [['email', 'fullName', 'note', 'password'], 'trim'],
+            ['email', 'string'],
+            ['email', 'email'],
+            ['email', 'unique'],
+            ['fullName', 'string', 'max' => 120],
+            [['email', 'fullName'], 'required'],
+            ['active', 'boolean'],
+            ['note', 'string'],
+            ['created', 'integer'],
+            ['created', 'default', 'value' => time(),],
+            ['password', 'string', 'min' => 8],
+            ['password', 'makeHash', 'skipOnEmpty' => false],
+            ['password', 'required', 'when' => fn($m) => $m->isNewRecord, 'enableClientValidation' => false ],
+            ['isAdmin', 'boolean'],
+            ['isAdmin', 'default', 'value' => false],
+        ];
+    }
+
+    public function attributeLabels()
+    {
+        return [
+            'email' => 'Почта',
+            'fullName' => 'Полное имя пользователя',
+            'note' => 'Заметка',
+            'password' => 'Пароль',
+            'active' => 'Активный',
+            'created' => 'Дата создания',
+            'isAdmin' => 'Является админом',
+        ];
+    }
+
+    /**
+     * хешировать введённый пароль или восстановить старый
+     * @param  string $attr имя атрибута
+     */
+    public function makeHash($attr)
+    {
+        $this->$attr = $this->$attr ? hash('sha256', $this->$attr) : $this->oldPasswordHash;
+    }
+
+    /**
+     * Сптсок счетов
+     * @return ActiveQuery объект запроса
+     */
+    public function getAccounts()
+    {
+        return $this->hasMany(Account::class, ['uid' => 'id']);
+    }
+
+    /**
+     * список счетов
+     * @return ActiveDataProvider Объект для отображения в GridView
+     */
+    public function getAccountsList()
+    {
+        return new ActiveDataProvider([
+            'query' => $this->getAccounts(),
+        ]);
     }
 }

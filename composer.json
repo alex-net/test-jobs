@@ -18,7 +18,8 @@
         "yiisoft/yii2": "~2.0.45",
         "yiisoft/yii2-bootstrap5": "~2.0.2",
         "erusev/parsedown": "dev-master",
-        "m1/env": "dev-master"
+        "m1/env": "dev-master",
+        "bestyii/yii2-bootstrap-icons": "dev-main"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0"

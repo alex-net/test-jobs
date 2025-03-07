@@ -10,6 +10,7 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\components\SimplePageAction;
+use app\components\PaymentDataAction;
 
 class SiteController extends Controller
 {
@@ -34,6 +35,7 @@ class SiteController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'logout' => ['post'],
+                    'payment-data-processing' => ['post'],
                 ],
             ],
         ];
@@ -55,41 +57,7 @@ class SiteController extends Controller
             'tz' => SimplePageAction::class,
             'index' => SimplePageAction::class,
             'about' => SimplePageAction::class,
+            'payment-data-processing' => PaymentDataAction::class,
         ];
-    }
-
-
-    /**
-     * Login action.
-     *
-     * @return Response|string
-     */
-    public function actionLogin()
-    {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        }
-
-        $model->password = '';
-        return $this->render('login', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Logout action.
-     *
-     * @return Response
-     */
-    public function actionLogout()
-    {
-        Yii::$app->user->logout();
-
-        return $this->goHome();
     }
 }

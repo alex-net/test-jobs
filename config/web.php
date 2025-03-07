@@ -15,7 +15,7 @@ $config = [
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-            'cookieValidationKey' => '1dZw-d59rodfGQ5Rl7JNkyQiAOeTY61v',
+            'cookieValidationKey' => ENV_DATA['COOKIE_VALIDATION_KEY'] ?? '1dZw-d59rodfGQ5Rl7JNkyQiAOeTY61v',
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -23,15 +23,10 @@ $config = [
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
+            'loginUrl' => ['/users/login'],
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
-        ],
-        'mailer' => [
-            'class' => \yii\symfonymailer\Mailer::class,
-            'viewPath' => '@app/mail',
-            // send all mails to a file by default.
-            'useFileTransport' => true,
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -46,11 +41,17 @@ $config = [
         'assetManager' => [
             'linkAssets' => true,
         ],
+        'authManager' => \yii\rbac\PhpManager::class,
 
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'profile' => 'users/profile',
+                'cash-stack' => 'users/view-account',
+                'login' => 'users/login',
+                'logout' => 'users/logout',
+                'payment-data-processing' => 'site/payment-data-processing',
             ],
         ],
 

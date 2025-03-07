@@ -41,17 +41,26 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
         'items' => [
             ['label' => 'Home', 'url' => ['/site/index']],
             ['label' => 'About', 'url' => ['/site/about']],
-            ['label' => 'ТЗ', 'url' => ['/site/tz']],
-            Yii::$app->user->isGuest
-                ? ['label' => 'Login', 'url' => ['/site/login']]
-                : '<li class="nav-item">'
-                    . Html::beginForm(['/site/logout'])
-                    . Html::submitButton(
-                        'Logout (' . Yii::$app->user->identity->username . ')',
-                        ['class' => 'nav-link btn btn-link logout']
-                    )
-                    . Html::endForm()
-                    . '</li>'
+            [
+                'label' => 'ТЗ',
+                'items' => [
+                    ['label' => 'Текст ТЗ', 'url' => ['/site/tz']],
+                    // ,
+                    Yii::$app->user->can('admin') ? '<hr class="dropdown-divider">' : '',
+                    ['label' => 'Пользователи', 'url' => ['users/index'], 'visible' => Yii::$app->user->can('admin')],
+                ],
+            ],
+            ['label' => 'Login', 'url' => ['/users/login'], 'visible' => Yii::$app->user->isGuest],
+            [
+                'label' => Yii::$app->user->identity ? Yii::$app->user->identity->fullName : '',
+                'visible' => !Yii::$app->user->isGuest,
+                'url' => false,
+                'items' => [
+                    ['label' => 'Профиль', 'url' => ['users/profile']],
+                    '<hr class="dropdown-divider">',
+                    $this->render('/logout-form'),
+                ],
+            ],
         ]
     ]);
     NavBar::end();
