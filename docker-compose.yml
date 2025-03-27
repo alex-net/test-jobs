@@ -22,16 +22,16 @@ services:
       - ./:/app
 
   db:
-    image: postgres:alpine
+    image: mariadb:latest
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/mysql
       - ./docker/dumps:/dumps
     working_dir: /dumps
     environment:
-      POSTGRES_USER: ${DB_USER:-db}
-      POSTGRES_HOST_AUTH_METHOD: trust
-      # POSTGRES_PASSWORD: ${DB_PASS}
-      POSTGRES_DB: ${DB_NAME:-db}
+      MARIADB_DATABASE: ${DB_NAME:-db}
+      MARIADB_USER: ${DB_USER:-db}
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: true
+      MARIADB_PASSWORD: ${DB_PASS}
 
 
 
