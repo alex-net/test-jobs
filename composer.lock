@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7723a1714ba06b3b70bbbd2700dfbb94",
+    "content-hash": "d3b2d222b0ca392ba405dc52ac00269d",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -334,6 +334,42 @@
                 "source": "https://github.com/m1/Env/tree/2.2.0"
             },
             "time": "2020-02-19T09:02:13+00:00"
+        },
+        {
+            "name": "splitbrain/php-qrcode",
+            "version": "0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/splitbrain/php-qrcode.git",
+                "reference": "c33506c5b7c1e71399da6fa917d69636cf37cb1f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/splitbrain/php-qrcode/zipball/c33506c5b7c1e71399da6fa917d69636cf37cb1f",
+                "reference": "c33506c5b7c1e71399da6fa917d69636cf37cb1f",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "splitbrain\\phpQRCode\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Andreas Gohr",
+                    "email": "andi@splitbrain.org"
+                }
+            ],
+            "description": "Minimalist SVG based QRCode Generator",
+            "support": {
+                "source": "https://github.com/splitbrain/php-qrcode/tree/0.1"
+            },
+            "time": "2022-03-10T16:01:17+00:00"
         },
         {
             "name": "yiisoft/yii2",

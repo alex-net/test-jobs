@@ -7,8 +7,10 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
+use yii\widgets\ActiveForm;
 use app\models\LoginForm;
 use app\components\SimplePageAction;
+use app\models\UrlLink;
 
 class SiteController extends Controller
 {
@@ -90,5 +92,25 @@ class SiteController extends Controller
         Yii::$app->user->logout();
 
         return $this->goHome();
+    }
+
+    /**
+     * действие отображающее форму добавления ссылки на главной странице
+     * @return [type] [description]
+     */
+    public function actionFront()
+    {
+        $model = new UrlLink();
+        // пришел запрос по post
+        if ($this->request->isAjax && $model->load($this->request->post())) {
+            $model->save();
+            if ($model->isNewRecord) {
+                return $this->renderPartial('url-form',  compact('model'));
+            } else {
+                return $this->renderPartial('url-result',  compact('model'));
+            }
+        }
+
+        return $this->render('url-form',  compact('model'));
     }
 }

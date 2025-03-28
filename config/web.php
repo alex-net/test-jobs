@@ -51,6 +51,10 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                '/' => 'site/front',
+                'go/<hash>' => 'url-applyer/redirect',
+                'saved-urls' => 'url-applyer/index',
+                'saved-urls/<id>' => 'url-applyer/detail',
             ],
         ],
 
