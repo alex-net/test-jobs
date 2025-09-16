@@ -55,6 +55,9 @@ $config = [
         ],
 
     ],
+    'modules' => [
+        'track' => 'app\modules\track\Module',
+    ],
     'params' => $params,
 ];
 
