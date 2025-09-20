@@ -51,7 +51,11 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'content-render/<action:[\w]+>-<type:[\w]+>' => 'content-render/<action>',
             ],
+        ],
+        'authManager' => [
+            'class' => 'yii\rbac\PhpManager',
         ],
 
     ],

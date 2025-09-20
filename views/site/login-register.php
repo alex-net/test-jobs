@@ -7,14 +7,27 @@
 
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
-
-$this->title = 'Login';
+use yii\bootstrap5\Tabs;
+$aId = $this->context->action->id;
+$this->title = ucfirst($aId);
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?= Tabs::widget(['items' => [
+    [
+        'label' => 'Login',
+        'active' => $aId == 'login',
+        'url' => ['login'],
+    ],
+    [
+        'label' => 'Registration',
+        'active' => $aId == 'registration',
+        'url' => ['registration'],
+    ]
+]])?>
 <div class="site-login">
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Please fill out the following fields to login:</p>
+    <p>Please fill out the following fields to <?= $aId ?>:</p>
 
     <div class="row">
         <div class="col-lg-5">
@@ -32,14 +45,15 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
 
             <?= $form->field($model, 'password')->passwordInput() ?>
-
-            <?= $form->field($model, 'rememberMe')->checkbox([
-                'template' => "<div class=\"custom-control custom-checkbox\">{input} {label}</div>\n<div class=\"col-lg-8\">{error}</div>",
-            ]) ?>
+            <?php if ($model->scenario == $model::SCENARIO_LOGIN): ?>
+                <?= $form->field($model, 'rememberMe')->checkbox([
+                    'template' => "<div class=\"custom-control custom-checkbox\">{input} {label}</div>\n<div class=\"col-lg-8\">{error}</div>",
+                ]) ?>
+            <?php endif; ?>
 
             <div class="form-group">
                 <div>
-                    <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
+                    <?= Html::submitButton(ucfirst($aId), ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
                 </div>
             </div>
 

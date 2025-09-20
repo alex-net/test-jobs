@@ -2,38 +2,70 @@
 
 namespace app\models;
 
-class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
-{
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
+use yii\helpers\ArrayHelper;
+use Yii;
 
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
+class User extends ActiveRecord implements IdentityInterface
+{
+    const ROLE_ADMIN = 'admin';
+    const ROLES = [
+        self::ROLE_ADMIN => 'Админ',
+        'user 1' => 'Роль 1',
+        'role 2' => 'Роль 2',
     ];
 
+    public static function tableName()
+    {
+        return '{{%users}}';
+    }
+
+    public function rules()
+    {
+        return [
+            [['login', 'passHash'], 'trim'],
+            ['login', 'string', 'max' => 20],
+            ['login', 'unique'],
+            ['passHash', 'string', 'max' => 60, 'min' => 60],
+            [['login', 'passHash', 'role'], 'required'],
+            ['role', 'in', 'range' => array_keys(static::ROLES)],
+        ];
+    }
+
+    public function attributeLabels()
+    {
+        return [
+            'login' => 'Логин',
+            'role' => 'Роль',
+            // 'books' =>
+        ];
+    }
+
+    /**
+     * Связка на книжки пользоателя
+     * @return yii\db\ActiveQuery
+     */
+    public function getBooks()
+    {
+        return $this->hasMany(Book::class, ['uid' => 'id']);
+    }
+
+    /**
+     * Связка на авторов пользователя
+     * @return yii\db\ActiveQuery
+     */
+    public function getAuthors()
+    {
+        return $this->hasMany(Author::class, ['uid' => 'id']);
+    }
 
     /**
      * {@inheritdoc}
      */
     public static function findIdentity($id)
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        return static::findOne($id);
     }
 
     /**
@@ -41,13 +73,12 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
-
         return null;
+    }
+
+    public function getUsername()
+    {
+        return $this->login;
     }
 
     /**
@@ -58,13 +89,17 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      */
     public static function findByUsername($username)
     {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
+        return static::findOne(['login' => $username]);
+    }
 
-        return null;
+    /**
+     * пользователи в виде списка
+     * @return array
+     */
+    public static function asList()
+    {
+        $list = static::find()->select(['id', 'login'])->asArray()->indexBy('id')->all();
+        return ArrayHelper::getColumn($list, 'login');
     }
 
     /**
@@ -80,7 +115,12 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      */
     public function getAuthKey()
     {
-        return $this->authKey;
+        $aKey = Yii::$app->session->get('aKey');
+        if (!isset($aKey)) {
+            $aKey = Yii::$app->security->encryptByPassword($this->login . '-'. Yii::$app->security->generateRandomString(), $this->passHash);
+            Yii::$app->session->set('aKey', $aKey);
+        }
+        return $aKey;
     }
 
     /**
@@ -99,6 +139,62 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      */
     public function validatePassword($password)
     {
-        return $this->password === $password;
+        return $this->passHash === Yii::$app->security->generatePasswordHash($password);
+    }
+
+    public function afterSave($ins, $chAttrs)
+    {
+        parent::afterSave($ins, $chAttrs);
+        if ($ins) { // новый пользователь
+            $this->generateContent();
+        }
+    }
+
+    /**
+     * генерация полезного контента по книжкам и авторам
+     * @return [type] [description]
+     */
+    protected function generateContent()
+    {
+        // генерим книжки
+        $books = [];
+        $bookMax = rand(3, 20);
+        for ($i = 0; $i < $bookMax; $i++) {
+            $book = new Book([
+                'title' => Yii::$app->security->generateRandomString(rand(10, 95)),
+                'uid' => $this->id,
+            ]);
+            if ($book->save()) {
+                $books[$book->id] = $book->id;
+            }
+        }
+
+        // генерим авторов
+        $authors = [];
+        $authorsMax = rand(3, 30);
+        for ($i = 0; $i < $authorsMax; $i++) {
+            $author = new Author([
+                'full_name' => Yii::$app->security->generateRandomString(rand(10, 45)),
+                'uid' => $this->id,
+            ]);
+            if ($author->save()) {
+                $authors[$author->id] = $author->id;
+            }
+        }
+
+        // генерим связки ...(у каждой книжки должен быть хотябы один автор )
+        foreach ($books as $bId) {
+            $aIds =  array_rand($authors, rand(1, 3));
+            if (!is_array($aIds)) {
+                $aIds = [$aIds];
+            }
+            foreach ($aIds as $aId) {
+                $bind = new AuthotBookBinder([
+                    'book_id' => $bId,
+                    'author_id' => $authors[$aId],
+                ]);
+                $bind->save();
+            }
+        }
     }
 }

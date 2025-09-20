@@ -9,6 +9,9 @@ use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
 use yii\bootstrap5\Nav;
 use yii\bootstrap5\NavBar;
+use app\models\Book;
+use app\models\Author;
+use app\models\User;
 
 AppAsset::register($this);
 
@@ -42,6 +45,13 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
             ['label' => 'Home', 'url' => ['/site/index']],
             ['label' => 'About', 'url' => ['/site/about']],
             ['label' => 'ТЗ', 'url' => ['/site/tz']],
+            Book::menuItem(),
+            Author::menuItem(),
+            [
+                'label' => 'Пользователи',
+                'url' => ['users/index'],
+                'visible' => Yii::$app->user->can(User::ROLE_ADMIN),
+            ],
             Yii::$app->user->isGuest
                 ? ['label' => 'Login', 'url' => ['/site/login']]
                 : '<li class="nav-item">'
