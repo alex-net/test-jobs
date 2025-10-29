@@ -2,6 +2,6 @@
 
 use app\widgets\MarkdownWidget;
 
-$this->title = 'Тестовое задание о коробках и товарах';
+$this->title = 'Тестовое задание';
 
 echo MarkdownWidget::widget(['fileMarkdownPath' => '@app/TZ.md']);
