@@ -53,7 +53,7 @@ class SiteController extends Controller
             ],
             'tz' => SimplePageAction::class,
             'index' => SimplePageAction::class,
-            'about' => SimplePageAction::class,
+            // 'about' => SimplePageAction::class,
         ];
     }
 
