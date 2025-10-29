@@ -25,7 +25,10 @@ class MarkdownWidget extends Widget
             return '';
         }
         $md = new Parsedown();
-        return $md->text(file_get_contents($path));
-        ;
+        // чтение контента
+        $content = file_get_contents($path);
+        // замена путей картинок. Картинки должны лежать в ./web
+        $content = preg_replace('#(\!\[.*?\])\(web(.*?)\)#m', '$1($2)', $content);
+        return $md->text($content);
     }
 }
