@@ -123,6 +123,11 @@ class SiteController extends Controller
         return $this->render('post-edit-form', ['editOnly' => true, 'model' => $model]);
     }
 
+    /**
+     * Действие удаления записи
+     * @param  app\models\StoryValut $model [description]
+     * @return yii\web\Response
+     */
     protected function postToDoKill($model)
     {
         if ($this->request->isPost) {
