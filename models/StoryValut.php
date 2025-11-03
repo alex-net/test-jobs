@@ -58,6 +58,7 @@ class StoryValut extends ActiveRecord
     {
         return [
             [['author', 'message', 'mail'], 'trim'],
+            ['author', 'filter', 'filter' => 'htmlspecialchars'],
             ['author', 'string', 'max' => 15, 'min' => 2],
             ['message', 'string', 'max' => 1000, 'min' => 5],
             ['message', 'filter', 'filter' => fn($text) => HtmlPurifier::process($text, [
