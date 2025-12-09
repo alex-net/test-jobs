@@ -51,6 +51,10 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'books/add' => 'books/update',
+                'books/update/<id>' => 'books/update',
+                'authors/add' => 'authors/update',
+                'authors/update/<id>' => 'authors/update',
             ],
         ],
 

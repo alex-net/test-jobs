@@ -35,3 +35,4 @@ tests/_support/_generated
 /.env
 /runtime
 /rbac/*
+/web/covers
