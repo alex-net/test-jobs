@@ -2,12 +2,10 @@
 
 namespace app\controllers;
 
-use yii\web\Controller;
-
 /**
  * контроллер на CRUD для книг
  */
-class BooksController extends Controller
+class BooksController extends BookAuthorControllerBase
 {
-    use BookAuthorTrait;
+
 }

@@ -2,13 +2,14 @@
 
 namespace app\controllers;
 
-use Yii;
+use yii\web\Controller;
 use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
+use Yii;
 
-trait BookAuthorTrait
+class BookAuthorControllerBase extends Controller
 {
-    private $entityClass;
+    protected $entityClass;
 
     public function init()
     {

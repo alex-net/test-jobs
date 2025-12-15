@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2b6eebaf65e83454ed85e592d5aa1672",
+    "content-hash": "17903bb0bbc0e7ca31e0bc488a9d1278",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -335,6 +335,18 @@
                 "source": "https://github.com/m1/Env/tree/2.2.0"
             },
             "time": "2020-02-19T09:02:13+00:00"
+        },
+        {
+            "name": "npm-asset/select2",
+            "version": "4.1.0-RC.0",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/select2/-/select2-4.1.0-rc.0.tgz"
+            },
+            "type": "npm-asset",
+            "license": [
+                "MIT"
+            ]
         },
         {
             "name": "yiisoft/yii2",
@@ -716,7 +728,8 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "erusev/parsedown": 20,
-        "m1/env": 20
+        "m1/env": 20,
+        "npm-asset/select2": 5
     },
     "prefer-stable": false,
     "prefer-lowest": false,
@@ -724,5 +737,5 @@
         "php": ">=7.4.0"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

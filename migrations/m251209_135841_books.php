@@ -35,7 +35,6 @@ class m251209_135841_books extends Migration
 
         // таблица связка ..
         $this->createTable('{{%bab}}', [
-            'id' => $this->primaryKey(),
             'bid' => $this->integer()->notNull()->comment('Ссылка на книгу'),
             'aid' => $this->integer()->notNull()->comment('Ссылка на автора'),
         ]);

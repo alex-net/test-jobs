@@ -7,7 +7,7 @@ $this->title = $model->isNewRecord ? 'Новый автор' : 'Редактио
 $this->params['breadcrumbs'][] = ['label' => 'Все авторы', 'url' => ['index']];
 
 $f = ActiveForm::begin();
-echo $f->field($model, 'fio');
+echo $f->field($model, 'fio', ['inputOptions' => ['autofocus' => true]]);
 
 echo Html::submitButton('Сохранить', ['class' => 'btn btn-primary']);
 ActiveForm::end();

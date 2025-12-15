@@ -21,4 +21,13 @@ class Author extends ActiveRecord
             'fio' => 'ФИО',
         ];
     }
+
+    /**
+     * запрос всех книжек приереплённых к автору
+     * @return [type] [description]
+     */
+    public function getBooks()
+    {
+        return $this->hasMany(Book::class, ['id' => 'bid'])->viaTable('{{%bab}}', ['aid' => 'id']);
+    }
 }

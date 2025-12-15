@@ -18,6 +18,27 @@ class Book extends ActiveRecord
      */
     public $image;
 
+    /**
+     * список авторов
+     * @var array
+     */
+    public $authorList;
+
+    public function afterFind()
+    {
+        parent::afterFind();
+        $this->authorList = array_map(fn($el) => $el->id, $this->authors);
+    }
+
+    /**
+     * Список всех прикреплённых авторов
+     * @return [type] [description]
+     */
+    public function getAuthors()
+    {
+        return $this->hasMany(Author::class, ['id' => 'aid'])->viaTable('{{%bab}}', ['bid' => 'id'])->indexBy('id');
+    }
+
 
     public function rules()
     {
@@ -28,6 +49,8 @@ class Book extends ActiveRecord
             ['year', 'integer', 'min' => 0],
             ['image', 'image', 'extensions' => ['jpg', 'jpeg', 'png']],
             [['name', 'year', 'isbn'], 'required'],
+            ['authorList', 'each', 'rule' => ['integer']],
+            // ['authorList', 'safe'],
         ];
     }
 
@@ -39,6 +62,7 @@ class Book extends ActiveRecord
             'isbn' => 'ISBN',
             'descr' => 'Краткое описание',
             'image' => 'Обложка',
+            'authorList' => 'Список авторов',
         ];
     }
 
@@ -48,6 +72,11 @@ class Book extends ActiveRecord
         return parent::beforeValidate();
     }
 
+
+    /**
+     * вернуть картинку прикреплённую к ниге
+     * @return string url каринки для тега img
+     */
     public function getCover()
     {
         $images = FileHelper::findFiles(Yii::getAlias(static::COVE_FOLDER), ['filter' => fn($path) => preg_match(sprintf('#\/%d\.\w+$#i', $this->id), $path)]);
@@ -60,6 +89,14 @@ class Book extends ActiveRecord
     public function afterSave($ins, $chA)
     {
         parent::afterSave($ins, $chA);
+
+        // удалить все связки на авторов
+        BookAuthorBinder::deleteAll(['bid' => $this->id]);
+        // создать записи для новых связок
+        foreach ($this->authorList as $authorId) {
+            $binder = new BookAuthorBinder(['bid' => $this->id, 'aid' => $authorId]);
+            $binder->save();
+        }
         // загружена картинка
         if ($this->image) {
             // удалить старую картинку, если есть
