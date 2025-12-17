@@ -5,11 +5,26 @@ namespace app\controllers;
 use yii\web\Controller;
 use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
+use yii\filters\AccessControl;
 use Yii;
 
 class BookAuthorControllerBase extends Controller
 {
     protected $entityClass;
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => AccessControl::class,
+                'rules' => [
+                    ['allow' => true, 'roles' => ['@']],
+                    ['allow' => true, 'roles' => ['?'], 'actions' => ['index', 'view']],
+                    ['allow' => false, 'roles' => ['?']],
+                ],
+            ],
+        ];
+    }
 
     public function init()
     {
@@ -30,6 +45,12 @@ class BookAuthorControllerBase extends Controller
         return $this->render('index', compact('dp'));
     }
 
+    public function actionView($id)
+    {
+        $model = $this->findModel($id);
+
+        return $this->render('view', compact('model'));
+    }
 
     /**
      * поиск модели по ID

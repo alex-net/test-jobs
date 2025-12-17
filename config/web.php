@@ -27,6 +27,9 @@ $config = [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
+        'formatter' => [
+            'class' => 'app\components\SiteFormatter',
+        ],
         'mailer' => [
             'class' => \yii\symfonymailer\Mailer::class,
             'viewPath' => '@app/mail',
@@ -51,10 +54,9 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                'books/add' => 'books/update',
-                'books/update/<id>' => 'books/update',
-                'authors/add' => 'authors/update',
-                'authors/update/<id>' => 'authors/update',
+                '<controller:books|authors>/update/<id>' => '<controller>/update',
+                '<controller:books|authors>/view/<id>' => '<controller>/view',
+                '<controller:books|authors>/add' => '<controller>/update',
             ],
         ],
 

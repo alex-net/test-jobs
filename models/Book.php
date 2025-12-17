@@ -22,13 +22,7 @@ class Book extends ActiveRecord
      * список авторов
      * @var array
      */
-    public $authorList;
-
-    public function afterFind()
-    {
-        parent::afterFind();
-        $this->authorList = array_map(fn($el) => $el->id, $this->authors);
-    }
+    public $authorList = [];
 
     /**
      * Список всех прикреплённых авторов
@@ -46,7 +40,7 @@ class Book extends ActiveRecord
             [['name', 'descr'], 'string'],
             ['isbn', 'string', 'max' => 20],
             [['name', 'descr', 'isbn'], 'trim'],
-            ['year', 'integer', 'min' => 0],
+            ['year', 'integer', 'min' => 1],
             ['image', 'image', 'extensions' => ['jpg', 'jpeg', 'png']],
             [['name', 'year', 'isbn'], 'required'],
             ['authorList', 'each', 'rule' => ['integer']],
@@ -79,7 +73,11 @@ class Book extends ActiveRecord
      */
     public function getCover()
     {
-        $images = FileHelper::findFiles(Yii::getAlias(static::COVE_FOLDER), ['filter' => fn($path) => preg_match(sprintf('#\/%d\.\w+$#i', $this->id), $path)]);
+        if ($this->isNewRecord) {
+            return;
+        }
+        $images = FileHelper::findFiles(Yii::getAlias(static::COVE_FOLDER), ['filter' => fn($path) => boolval(preg_match(sprintf('#/%d\.\w+$#i', $this->id), $path)),]);
+
         if ($images) {
             $images = substr(reset($images), strlen(Yii::getAlias('@webroot'))) ;
             return $images;

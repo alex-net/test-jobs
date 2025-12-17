@@ -7,8 +7,9 @@ use yii\grid\ActionColumn;
 
 $this->title = 'Книги';
 
-
-echo Html::a('Добавить книгу', ['add'], ['class' => 'btn btn-primary']);
+if (!Yii::$app->user->isGuest) {
+    echo Html::a('Добавить книгу', ['add'], ['class' => 'btn btn-primary']);
+}
 
 echo GridView::widget([
     'options' => ['class' => ['mt-3']],
@@ -16,6 +17,9 @@ echo GridView::widget([
     'columns' => [
         ['class' => SerialColumn::class],
         'name', 'year', 'isbn',
-        ['class' => ActionColumn::class],
+        [
+            'class' => ActionColumn::class,
+            'template' => Yii::$app->user->isGuest ? '{view}' : '{view} {update} {delete}',
+        ],
     ],
 ]);

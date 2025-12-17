@@ -9,6 +9,8 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\components\SimplePageAction;
+use app\models\Author;
+use app\models\ReportFilter;
 
 class SiteController extends Controller
 {
@@ -90,5 +92,12 @@ class SiteController extends Controller
         Yii::$app->user->logout();
 
         return $this->goHome();
+    }
+
+    public function actionReport($year = null)
+    {
+        $filter = new ReportFilter();;
+        $filter->load($this->request->get());
+        return $this->render('report', compact('year', 'filter'));
     }
 }
